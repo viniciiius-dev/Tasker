@@ -37,7 +37,6 @@ def create_json_file():
 def check_highest_id():
     tasks = json_to_list()
     try:
-        print(len(tasks))
         if len(tasks) == 1:
             return 0
         else:

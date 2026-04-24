@@ -13,9 +13,8 @@ class myCLI(cmd.Cmd):
         # check description of the task
         if line == '':
             print("""You need to input the description of the task after the add command.
-Example: """)
-            return
-        print(line)
+Example: add Do laundry""")
+            return None
         """add new task"""
         global task_info
         global highest_id

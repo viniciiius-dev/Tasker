@@ -5,11 +5,12 @@ from logging import exception
 from functions import *
 
 class myCLI(cmd.Cmd):
-    prompt = ('task-cli ' )
-    intro = 'Welcome to Tasker. Type "help" to see available commands.'
-
+    prompt = ('Tasker ' )
+    intro = 'Welcome to Tasker. Type help to see available commands.'
 
     def do_add(self, line):
+        """Use add and the description of the task to add a task
+        Example: add Buy groceries"""
         # check description of the task
         if line == '':
             print("""You need to input the description of the task after the add command.
@@ -37,8 +38,9 @@ Example: add Do laundry""")
             add_task_to_file(task_info)
 
         print(f"Task added successfully (ID: {task_id})")
-
     def do_update(self, line):
+        """Use update, the ID of the task and the new description to update a task
+        Example: update 1 Buy groceries and cook dinner"""
         try:
             id = int(line[0:line.index(" ")])
             new_task_desc = line[line.index(" ") + 1:]
@@ -65,11 +67,14 @@ Example: add Wash dishes.""")
             tasks[index]["desc"] = new_task_desc
             tasks[index]["updatedAt"] = datetime.now().strftime("%d %b %Y, %I:%M%p")
             modify_json(tasks)
+            print(f"Task updated successfully (ID: {id})")
         else:
             print("The ID doesn't match a task. To see IDs and tasks, type list.")
 
 
     def do_delete(self, line):
+        """Use delete and the ID of the task to delete a task
+        Example: delete 1"""
         # Deletes the task using ID
         try:
             id = int(line)
@@ -107,12 +112,17 @@ To see tasks and IDs, type list. """)
         # If the removed ID is the highest one, updates the highest ID in the JSON file
         if id == list_ids[-1]:
             update_highest_id("remove")
+        print(f"Task deleted successfully (ID: {id})")
+
 
 
 
 
     # Mark task in progress or done
     def do_mark_in_progress(self, line):
+        """Use mark_in_progress and the ID of the task to mark a task as in progress
+        Example: mark_in_progress 1"""
+        #
         tasks = json_to_list()
         try:
             id = int(line)
@@ -131,18 +141,22 @@ To see tasks and IDs, type list. """)
             tasks[index]["status"] = "in_progress"
             tasks[index]["updatedAt"] =  datetime.now().strftime("%d %b %Y, %I:%M%p")
             modify_json(tasks)
+            print(f"Task marked as in progress (ID: {id})")
         else:
             print("The ID doesn't match a task. To show tasks and IDs, type list.")
             return None
 
     def do_mark_done(self, line):
+        """Use mark_done and the ID of the task to mark a task as done
+        Example: mark_done 1"""
+
         tasks = json_to_list()
         try:
             id = int(line)
         except ValueError:
             print("""To mark a task as completed, you need to place a ID after the command.
-        Example: mark_done 1
-        To see tasks and IDs, type list. """)
+Example: mark_done 1
+To see tasks and IDs, type list. """)
             return None
         list_ids = []
 
@@ -154,12 +168,20 @@ To see tasks and IDs, type list. """)
             tasks[index]["status"] = "done"
             tasks[index]["updatedAt"] =  datetime.now().strftime("%d %b %Y, %I:%M%p")
             modify_json(tasks)
+            print(f"Task marked as done (ID: {id})")
         else:
             print("The ID doesn't match a task. To show tasks and IDs, type list.")
             return None
 
     # Show list of tasks
     def do_list(self, line):
+        """Use list to display all the tasks, use list and a status to display the tasks with the respective status
+        Available status: todo, in_progress, done
+        Example: list (to list all tasks)
+                 list todo (to list all tasks to do)
+                 list in_progress (to list all tasks that are in progress)
+                 list done (to list all tasks that are done)"""
+
         status = line
         tasks = json_to_list()
         if tasks == None:
@@ -175,14 +197,14 @@ STATUS: {tasks[index]["status"]}\n""")
 
             case "done":
                 for index in range(1, len(tasks)):
-                    if tasks[index]["status"] == "completado":
+                    if tasks[index]["status"] == "done":
                         print(f"""TASK ID: {tasks[index]["id"]}
 DESCRIPTION: {tasks[index]["desc"]}
 STATUS: {tasks[index]["status"]}\n""")
 
             case "in_progress":
                 for index in range(1, len(tasks)):
-                    if tasks[index]["status"] == "em_progresso":
+                    if tasks[index]["status"] == "in_progress":
                         print(f"""TASK ID: {tasks[index]["id"]}
 DESCRIPTION: {tasks[index]["desc"]}
 STATUS: {tasks[index]["status"]}\n""")

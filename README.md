@@ -55,7 +55,3 @@ Tasker list todo
 Tasker list in_progress
 Tasker list done
 ```
-
-Tasker list in_progress
-Tasker list done
-```

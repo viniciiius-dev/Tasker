@@ -5,7 +5,7 @@ from datetime import datetime
 from logging import exception
 from functions import *
 
-class myCLI(cmd.Cmd):
+class Tasker(cmd.Cmd):
     prompt = ('Tasker ' )
     intro = 'Welcome to Tasker. Type help to see available commands.'
 
@@ -224,4 +224,4 @@ To see done tasks, in progress, or todo, use list done, list in_progress or list
 
 
 if __name__ == '__main__':
-    myCLI().cmdloop()
+    Tasker().cmdloop()

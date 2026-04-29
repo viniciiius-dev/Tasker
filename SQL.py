@@ -11,16 +11,23 @@ with psycopg.connect(connstring) as conn:
             atualizadoEm TIMESTAMPTZ(0) DEFAULT CURRENT_TIMESTAMP NOT NULL
     )""")
     def sql_add_task(desc):
-        create_task_string = """INSERT INTO tarefas (descricao)
+        create_task_query = """INSERT INTO tarefas (descricao)
         VALUES ('%s')
         """ % (desc)
-        cur.execute(create_task_string)
+        cur.execute(create_task_query)
 
     def sql_update_task(id, desc):
-        pass
+        update_task_query = """UPDATE tarefas
+        SET descricao = '%s'
+        WHERE id = %s
+        """ % (desc, id)
+        cur.execute(update_task_query)
     def sql_delete_task(id):
-        pass
+        delete_task_query = """DELETE FROM tarefas
+        WHERE id = %s
+        """ % (id)
+        cur.execute(delete_task_query)
 
-    # cur.execute(create_table)
-    # cur.execute(sql_add_task("do laundry"))
-    # conn.commit()
+
+    cur.execute(create_table)
+    conn.commit()

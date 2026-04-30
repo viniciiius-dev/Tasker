@@ -1,6 +1,6 @@
 from json import JSONDecodeError
 import json
-import inspect
+from inspect import stack
 
 
 def modify_json(new_json):
@@ -13,7 +13,7 @@ def json_to_list():
             list_json = json.load(read_file)
             return list_json
     except FileNotFoundError, JSONDecodeError:
-        caller_frame = inspect.stack()[1]
+        caller_frame = stack()[1]
         caller_name = caller_frame.function
         if not caller_name == "check_highest_id":
             print("""Couldn't find any task. To create one, use the command add and the description of the task.
@@ -73,3 +73,8 @@ def update_highest_id(action):
     except FileNotFoundError, JSONDecodeError:
         pass
     return highest_id
+
+def get_list_of_ids():
+    json_list = json_to_list()
+    list_ids = [tarefa.get("id") for tarefa in json_list[1:]]
+    return list_ids

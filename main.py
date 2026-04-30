@@ -18,8 +18,6 @@ class Tasker(cmd.Cmd):
 Example: add Do laundry""")
             return None
         """add new task"""
-        global task_info
-        global highest_id
         task_desc = line
         task_id = update_highest_id("add")
         task_info = {
@@ -31,14 +29,14 @@ Example: add Do laundry""")
         }
 
         try:
-            json_file = open("task_data.json")
             add_task_to_file(task_info)
-
         except FileNotFoundError, JSONDecodeError:
             create_json_file()
             add_task_to_file(task_info)
-
         print(f"Task added successfully (ID: {task_id})")
+
+
+
     def do_update(self, line):
         """Use update, the ID of the task and the new description to update a task
         Example: update 1 Buy groceries and cook dinner"""

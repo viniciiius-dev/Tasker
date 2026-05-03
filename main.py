@@ -1,9 +1,11 @@
 import cmd
-import SQL
+import sql_connection
+from sql_functions import sql_add_task, sql_update_task, sql_delete_task, sql_mark_in_progress, sql_mark_done
 
 from datetime import datetime
 from logging import exception
 from functions import *
+
 
 class Tasker(cmd.Cmd):
     prompt = ('Tasker ' )
@@ -30,9 +32,11 @@ Example: add Do laundry""")
 
         try:
             add_task_to_file(task_info)
-        except FileNotFoundError, JSONDecodeError:
+        except (FileNotFoundError, JSONDecodeError):
             create_json_file()
             add_task_to_file(task_info)
+        sql_add_task(task_info.get("id"), task_info.get("desc"))
+
         print(f"Task added successfully (ID: {task_id})")
 
 
@@ -47,6 +51,9 @@ Example: add Do laundry""")
             print("""You need to input the Task ID and the new description of the task
 Example: update 6 "Wash dishes". 
 To see tasks and IDs, type list.""")
+            return None
+        if id <= 0:
+            print("ID must be a number higher than zero")
             return None
 
         tasks = json_to_list()
@@ -66,6 +73,7 @@ Example: add Wash dishes.""")
             tasks[index]["desc"] = new_task_desc
             tasks[index]["updatedAt"] = datetime.now().strftime("%d %b %Y, %I:%M%p")
             modify_json(tasks)
+            sql_update_task(id, new_task_desc)
             print(f"Task updated successfully (ID: {id})")
         else:
             print("The ID doesn't match a task. To see IDs and tasks, type list.")
@@ -81,6 +89,9 @@ Example: add Wash dishes.""")
             print("""To delete a task, you need to place an ID after the command
 Example: delete 1
 To see tasks and IDs, type list. """)
+            return None
+        if id <= 0:
+            print("ID must be a number higher than zero")
             return None
 
         # If the file is empty or there is no file, the function returns None and tells the user it didn't find any tasks.
@@ -105,8 +116,10 @@ To see tasks and IDs, type list. """)
         if id in list_ids:
             tasks.pop(list_ids.index(id) + 1)
             modify_json(tasks)
+            sql_delete_task(id)
         else:
             print("The ID doesn't match a task. To see tasks and IDs, type list.")
+            return None
 
         # If the removed ID is the highest one, updates the highest ID in the JSON file
         if id == list_ids[-1]:
@@ -130,6 +143,10 @@ To see tasks and IDs, type list. """)
 Example: mark_in_progress 1
 To see tasks and IDs, type list. """)
             return None
+        if id <= 0:
+            print("ID must be a number higher than zero")
+            return None
+
         list_ids = []
 
         for tarefa in range(1, len(tasks)):
@@ -140,6 +157,7 @@ To see tasks and IDs, type list. """)
             tasks[index]["status"] = "in_progress"
             tasks[index]["updatedAt"] =  datetime.now().strftime("%d %b %Y, %I:%M%p")
             modify_json(tasks)
+            sql_mark_in_progress(id)
             print(f"Task marked as in progress (ID: {id})")
         else:
             print("The ID doesn't match a task. To show tasks and IDs, type list.")
@@ -157,6 +175,9 @@ To see tasks and IDs, type list. """)
 Example: mark_done 1
 To see tasks and IDs, type list. """)
             return None
+        if id <= 0:
+            print("ID must be a number higher than zero")
+            return None
         list_ids = []
 
         for task in range(1, len(tasks)):
@@ -167,6 +188,7 @@ To see tasks and IDs, type list. """)
             tasks[index]["status"] = "done"
             tasks[index]["updatedAt"] =  datetime.now().strftime("%d %b %Y, %I:%M%p")
             modify_json(tasks)
+            sql_mark_done(id)
             print(f"Task marked as done (ID: {id})")
         else:
             print("The ID doesn't match a task. To show tasks and IDs, type list.")

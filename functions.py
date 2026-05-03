@@ -15,7 +15,7 @@ def json_to_list():
     except FileNotFoundError, JSONDecodeError:
         caller_frame = stack()[1]
         caller_name = caller_frame.function
-        if not caller_name == "check_highest_id":
+        if not caller_name in ["check_highest_id", "get_list_of_ids"]:
             print("""Couldn't find any task. To create one, use the command add and the description of the task.
 Example: add Wash dishes.""")
             return None

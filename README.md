@@ -18,6 +18,10 @@ Built as a solution for the [Task Tracker Challenge](https://roadmap.sh/backend/
 git clone https://github.com/viniciiius-dev/Tasker.git
 cd Tasker
 ```
+**2. Install dependencies**:
+```
+pip install -r requirements.txt
+```
 **2. Run the main.py file through python**:
 ```
 py main.py

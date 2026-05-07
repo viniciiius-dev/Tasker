@@ -31,13 +31,14 @@ def sql_add_task(json_id, descricao):
 
 
 
-def sql_add_existing_task(json_id, descricao, status, criadoEm, atualizadoEm):
+def sql_add_existing_task(tasks_list):
     if not SQL_connected:
         return None
     create_task_query = """INSERT INTO tarefas_db (id, descricao, status, criadoEm, atualizadoEm)
-    VALUES (%s, %s, %s, %s, %s)
+    VALUES (%s, %s, %s, %s, %s) 
+    ON CONFLICT (id) DO NOTHING
     """
-    cur.execute(create_task_query, (json_id, descricao, status, criadoEm, atualizadoEm))
+    cur.executemany(create_task_query, tasks_list)
 
 def sql_update_task(json_id, descricao):
     if not SQL_connected:
@@ -93,18 +94,20 @@ def update_SQL_to_JSON():
     query = """SELECT id FROM tarefas_db"""
     cur.execute(query)
     ids_in_sql =  {row[0] for row in cur.fetchall()}
-    ids_to_add = [id_json for id_json in list_ids_json if id_json not in ids_in_sql]
+    ids_to_add = {id_json for id_json in list_ids_json if id_json not in ids_in_sql}
     # ^^ create list of ids that are in JSON but not SQL
 
     # add to SQL those tasks
     tasks = json_to_list()
-    for id in ids_to_add:
-        sql_add_existing_task(id,
-            tasks[id].get("desc"),
-            tasks[id].get("status"),
-            tasks[id].get("createdAt"),
-            tasks[id].get("updatedAt")
-        )
+    listaAdd = []
+    for i in range(1, len(tasks)):
+        if tasks[i].get("id") in ids_to_add:
+            listaAdd.append(
+                (tasks[i].get("id"), tasks[i].get("desc"), tasks[i].get("status"), tasks[i].get("createdAt"),
+                 tasks[i].get("updatedAt")))
+
+    sql_add_existing_task(listaAdd)
     conn.commit()
+
 
 update_SQL_to_JSON()
